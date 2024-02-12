@@ -45,7 +45,7 @@ async function getProfileList() {
     return profiles;
 }
 
-function getProfile(){
+async function getProfile(){
    return browser.storage.local.get(['profile']);
 }
 
@@ -58,7 +58,6 @@ function setProfile(profileName){
 browser.proxy.onError.addListener(error => {
   console.error(`Proxy error: ${error.message}`);
 });
-
 
 async function populateProfileList() {
   let profileArray;
@@ -81,7 +80,28 @@ async function populateProfileList() {
     option.value = item;
     option.text = item;
     selectionMenu.appendChild(option);
+    selectionMenu.selectedIndex = -1;
   });
 }
+async function handleProfileSelection(){
+const profileSelection = document.getElementById('profileSelection');
+
+    const currentProfile = document.getElementById("currentProfile");
+    let profileText = await getProfile().then(profile => profile.profile);
+    currentProfile.innerHTML = "Current Profile: " + profileText;
+
+    profileSelection.addEventListener('change', function () {
+        // This code will run when the profile selection changes
+    const selectedProfile = profileSelection.value;
+    currentProfile.innerHTML = "Current Profile: " + selectedProfile;
+    setProfile(selectedProfile);
+    console.log('Selected Profile:', selectedProfile);
+
+
+    });
+
+}
+
 document.addEventListener('DOMContentLoaded', populateProfileList);
 browser.proxy.onRequest.addListener(handleProxyRequest, {urls: ["<all_urls>"]});
+handleProfileSelection();
