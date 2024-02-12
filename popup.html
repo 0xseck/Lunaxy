@@ -5,18 +5,30 @@
   <style>
     body {
       width: 200px;
-      text-align: center;
+      padding: 10px;
+      font-family: 'Arial', sans-serif;
+      background-color: #5e35b1; 
+      color: white;
     }
-    button {
-      margin: 10px;
+
+    select {
+      width: 100%;
+      padding: 5px;
+      margin-top: 10px;
     }
   </style>
 </head>
+
 <body>
-  <h2>Lunaxy</h2>
-  <input id="proxyURI" value="127.0.0.1:8080">
-  <button id="enableProxy">Enable Proxy</button>
-  <button id="disableProxy">Disable Proxy</button>
+  <h1>Lunaxy</h1>
+  <p id="currentProfile">Current Profile: </p>
+  <p id="select">Select Profile: </p>
+  <select id="profileSelection">
+
+    <!-- Populate options dynamically with JavaScript -->
+  </select>
+
   <script src="popup.js"></script>
 </body>
+
 </html>

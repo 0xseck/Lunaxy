@@ -1,26 +1,87 @@
+// Initialize the list of blocked hosts
+let blockedHosts = ["example.com", "example.org"];
 
-document.getElementById('enableProxy').addEventListener('click', enableProxy);
-document.getElementById('disableProxy').addEventListener('click', disableProxy);
-
-function enableProxy() {
-
-const proxyUri = document.getElementById('proxyURI').value;
-console.log("TEST");
-let proxySettings = {
-  proxyType: "manual",
-  ssl: proxyUri,
-  socksVersion: 4
-};
-
-browser.proxy.settings.set({ value: proxySettings });
-browser.proxy.settings.get({}).then((settings) => {
-  console.log(settings.value);
+// Set the default list on installation.
+browser.runtime.onInstalled.addListener(details => {
+  browser.storage.local.set({
+    blockedHosts: blockedHosts
+  });
 });
+
+// Get the stored list
+browser.storage.local.get(data => {
+  if (data.blockedHosts) {
+    blockedHosts = data.blockedHosts;
+  }
+});
+
+// Listen for changes in the blocked list
+browser.storage.onChanged.addListener(changeData => {
+  blockedHosts = changeData.blockedHosts.newValue;
+});
+
+// Managed the proxy
+
+// Listen for a request to open a webpage
+
+// On the request to open a webpage
+function handleProxyRequest(requestInfo) {
+// Read the web address of the page to be visited 
+  const url = new URL(requestInfo.url);
+// Determine whether the domain in the web address is on the blocked hosts list
+  if (blockedHosts.indexOf(url.hostname) == -1) {
+// Write details of the proxied host to the console and return the proxy address
+    console.log(`Proxying: ${url.hostname}`);
+    return {type: "http", host: "127.0.0.1", port: 8080};
+  }
+// Return instructions to open the requested webpage
+  return {type: "direct"};
 }
 
-function disableProxy() {
- console.log( browser.proxy.settings.clear({}));
-browser.proxy.settings.get({}).then((settings) => {
-  console.log(settings);
+async function getProfileList() {
+    const result = await browser.storage.local.get(['profiles']);
+    const profiles = result.profiles || [];
+
+    return profiles;
+}
+
+function getProfile(){
+   return browser.storage.local.get(['profile']);
+}
+
+function setProfile(profileName){
+    browser.storage.local.set({
+      profile: profileName
 });
 }
+// Log any errors from the proxy script
+browser.proxy.onError.addListener(error => {
+  console.error(`Proxy error: ${error.message}`);
+});
+
+
+async function populateProfileList() {
+  let profileArray;
+  const profiles = await getProfileList();
+
+  console.log("profiles:", profiles);
+  profileArray = profiles;
+
+  if (profiles.length === 0) {
+    await browser.storage.local.set({
+      profiles: ["Direct"]
+    });
+  }
+
+  const selectionMenu = document.getElementById('profileSelection');
+
+  profiles.forEach(item => {
+    const option = document.createElement('option');
+    console.log("option: " + item);
+    option.value = item;
+    option.text = item;
+    selectionMenu.appendChild(option);
+  });
+}
+document.addEventListener('DOMContentLoaded', populateProfileList);
+browser.proxy.onRequest.addListener(handleProxyRequest, {urls: ["<all_urls>"]});

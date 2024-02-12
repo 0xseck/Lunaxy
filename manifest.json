@@ -2,10 +2,10 @@
   "manifest_version": 2,
   "name": "Lunaxy",
   "version": "1.0",
-  "permissions": ["proxy", "privacy"],
+  "permissions": ["proxy", "privacy", "<all_urls>", "storage"],
   "background": {
     "scripts": ["popup.js"],
-    "persistent": false
+    "persistent": true
   },
   "browser_action": {
     "default_popup": "popup.html",
