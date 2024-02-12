@@ -25,17 +25,29 @@ browser.storage.onChanged.addListener(changeData => {
 // Listen for a request to open a webpage
 
 // On the request to open a webpage
-function handleProxyRequest(requestInfo) {
+function handleProxyRequest(requestInfo, proxyType,proxyHost, proxyPort) {
 // Read the web address of the page to be visited 
   const url = new URL(requestInfo.url);
-// Determine whether the domain in the web address is on the blocked hosts list
+// Determine whether the domain in the web address is on the blocked hosts list 
   if (blockedHosts.indexOf(url.hostname) == -1) {
 // Write details of the proxied host to the console and return the proxy address
     console.log(`Proxying: ${url.hostname}`);
-    return {type: "http", host: "127.0.0.1", port: 8080};
+    console.log( {type: proxyType, host: proxyHost, port: proxyPort} )
+    return {type: proxyType, host: proxyHost, port: proxyPort};
   }
 // Return instructions to open the requested webpage
   return {type: "direct"};
+}
+async function handleProxy(requestInfo){
+    
+    const profileName = await getProfile().then(profile => profile.profile);
+    let profileList = await getProfileList();
+    let profileDetails = profileList.find(item => item.name == profileName);
+    let proxyType = profileDetails.type;
+    let proxyHost = profileDetails.host;
+    let proxyPort = profileDetails.port;
+    console.log("proxy settings ==> host: " + proxyHost + "port: " + proxyPort + "type: " + proxyType )
+    return handleProxyRequest(requestInfo, proxyType, proxyHost, proxyPort)
 }
 
 async function getProfileList() {
@@ -66,9 +78,10 @@ async function populateProfileList() {
   console.log("profiles:", profiles);
   profileArray = profiles;
 
+//add direct profile on first run
   if (profiles.length === 0) {
     await browser.storage.local.set({
-      profiles: ["Direct"]
+      profiles: [{"name":"Direct","type":"direct"}]
     });
   }
 
@@ -76,15 +89,16 @@ async function populateProfileList() {
 
   profiles.forEach(item => {
     const option = document.createElement('option');
-    console.log("option: " + item);
-    option.value = item;
-    option.text = item;
+    console.log("runbo: " + item.name)
+    option.value = item.name;
+    option.text = item.name;
     selectionMenu.appendChild(option);
     selectionMenu.selectedIndex = -1;
   });
 }
 async function handleProfileSelection(){
-const profileSelection = document.getElementById('profileSelection');
+
+    const profileSelection = document.getElementById('profileSelection');
 
     const currentProfile = document.getElementById("currentProfile");
     let profileText = await getProfile().then(profile => profile.profile);
@@ -103,5 +117,9 @@ const profileSelection = document.getElementById('profileSelection');
 }
 
 document.addEventListener('DOMContentLoaded', populateProfileList);
-browser.proxy.onRequest.addListener(handleProxyRequest, {urls: ["<all_urls>"]});
+browser.proxy.onRequest.addListener(handleProxy, {urls: ["<all_urls>"]});
 handleProfileSelection();
+//browser.storage.local.set({
+//      profiles: [{"name":"Direct","type":"direct"},{"name":"custom1", "type":"http", "host": "127.0.0.1", "port": 8080}]
+//    });
+
