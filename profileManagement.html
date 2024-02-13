@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LunaxyAA</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 10px;
+      font-family: 'Arial', sans-serif;
+      background-color: #5e35b1; 
+      color: white;
+    }
+
+    #addprofile {
+      background-color: #945fff;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    select {
+      width: calc(100% - 16px); /* Adjusting for the default padding */
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Add Profile</h1>
+  <div id="addprofile">
+  <form id="profileForm">
+    <label for="proxyTypeSelection">Proxy Type:</label>
+    <select required="true" id="proxyTypeSelection">
+      <option value="http">HTTP</option>
+      <option value="socks">SOCKS</option>
+    </select>
+
+    <label for="proxyNameSelection">Name:</label>
+    <input required="true" maxlength="20" id="proxyNameSelection" />
+
+    <label for="proxyHostSelection">Proxy Host:</label>
+    <input maxlength="100" id="proxyHostSelection" />
+
+    <label for="proxyPortSelection">Proxy Port:</label>
+    <input  required="true" type="number" pattern="\d*" maxlength="100" id="proxyPortSelection" title="Please enter only numbers" />
+    <div class="error-message" id="proxyPortErrorMessage"></div>
+    <button class="addProfile" id="addButton">Add</button>
+    </form>
+  </div>
+  <script src="popup.js"></script>
+  <script src="profileManager.js"></script>
+</body>
+
+</html>

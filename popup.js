@@ -64,7 +64,13 @@ async function getProfile(){
 function setProfile(profileName){
     browser.storage.local.set({
       profile: profileName
-});
+    });
+}
+function setProfileList(profileList){
+
+    browser.storage.local.set({
+        profiles: profileList
+    });
 }
 // Log any errors from the proxy script
 browser.proxy.onError.addListener(error => {
@@ -115,11 +121,7 @@ async function handleProfileSelection(){
     });
 
 }
-
 document.addEventListener('DOMContentLoaded', populateProfileList);
 browser.proxy.onRequest.addListener(handleProxy, {urls: ["<all_urls>"]});
 handleProfileSelection();
-//browser.storage.local.set({
-//      profiles: [{"name":"Direct","type":"direct"},{"name":"custom1", "type":"http", "host": "127.0.0.1", "port": 8080}]
-//    });
 
