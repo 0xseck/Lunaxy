@@ -1,4 +1,5 @@
-// Initialize the list of blocked hosts
+
+////////////////
 let blockedHosts = ["example.com", "example.org"];
 
 // Set the default list on installation.
@@ -87,7 +88,7 @@ async function populateProfileList() {
 //add direct profile on first run
   if (profiles.length === 0) {
     await browser.storage.local.set({
-      profiles: [{"name":"Direct","type":"direct"}]
+      profiles: [{"name":"Direct","type":"direct","url":"","port":null}]
     });
   }
 
@@ -95,7 +96,6 @@ async function populateProfileList() {
 
   profiles.forEach(item => {
     const option = document.createElement('option');
-    console.log("runbo: " + item.name)
     option.value = item.name;
     option.text = item.name;
     selectionMenu.appendChild(option);
@@ -105,9 +105,12 @@ async function populateProfileList() {
 async function handleProfileSelection(){
 
     const profileSelection = document.getElementById('profileSelection');
-
     const currentProfile = document.getElementById("currentProfile");
     let profileText = await getProfile().then(profile => profile.profile);
+    if (!profileText) {
+        setProfile("Direct");
+        console.log(await getProfile())
+    }
     currentProfile.innerHTML = "Current Profile: " + profileText;
 
     profileSelection.addEventListener('change', function () {
