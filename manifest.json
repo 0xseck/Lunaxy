@@ -3,7 +3,8 @@
   "browser_specific_settings":{
     "gecko":{
         "id": "lunaxy@lunaxy.proxy",
-        "strict_min_version":"91.1.0"
+        "strict_min_version":"91.1.0",
+        "update_url":"https://seck.fun/Lunaxy/updates.json"
     }
   },
   "name": "Lunaxy",

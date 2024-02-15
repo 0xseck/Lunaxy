@@ -1,42 +1,27 @@
+//will be used for excluding hosts
+let blockedHosts = ["seck.fun", "test.com"];
 
-////////////////
-let blockedHosts = ["example.com", "example.org"];
-
-// Set the default list on installation.
 browser.runtime.onInstalled.addListener(details => {
   browser.storage.local.set({
     blockedHosts: blockedHosts
   });
 });
 
-// Get the stored list
 browser.storage.local.get(data => {
   if (data.blockedHosts) {
     blockedHosts = data.blockedHosts;
   }
 });
 
-// Listen for changes in the blocked list
 browser.storage.onChanged.addListener(changeData => {
   blockedHosts = changeData.blockedHosts.newValue;
 });
 
-// Managed the proxy
-
-// Listen for a request to open a webpage
-
-// On the request to open a webpage
 function handleProxyRequest(requestInfo, proxyType,proxyHost, proxyPort) {
-// Read the web address of the page to be visited 
   const url = new URL(requestInfo.url);
-// Determine whether the domain in the web address is on the blocked hosts list 
   if (blockedHosts.indexOf(url.hostname) == -1) {
-// Write details of the proxied host to the console and return the proxy address
-    console.log(`Proxying: ${url.hostname}`);
-    console.log( {type: proxyType, host: proxyHost, port: proxyPort} )
     return {type: proxyType, host: proxyHost, port: proxyPort};
   }
-// Return instructions to open the requested webpage
   return {type: "direct"};
 }
 async function handleProxy(requestInfo){
